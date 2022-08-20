@@ -1,5 +1,4 @@
-use lazy_static::lazy_static;
-use regex::{Regex, RegexSet};
+use std::str::Chars;
 
 
 #[derive(PartialEq, Clone, Debug)]
@@ -13,43 +12,26 @@ pub enum Token {
     Comma,
     Ident(String),
     Number(f64),
-    Operator(String),
+    Operator(char),
 }
 
-pub struct Tokenizer {
-    text: String,
+pub struct Tokenizer<'a> {
+    chars: Chars<'a>,
 }
 
-impl Tokenizer {
-    pub fn new<T: Into<String>>(text: T) -> Self {
-        let text = text.into();
-        let text = Self::preprocessing(text);
-        Self { text }
-    }
-
-    fn preprocessing(text: String) -> String {
-        lazy_static! {
-            static ref RE: Regex = Regex::new(r"(?m)#.*\n").unwrap();
-        }
-        let text = RE.replace_all(text.as_str(), "\n");
-        text.into()
+impl<'a> From<&'a str> for Tokenizer<'a> {
+    fn from(text: &'a str) -> Self {
+        Self { chars: text.chars() }
     }
 }
 
-impl Iterator for Tokenizer {
+impl<'a> Iterator for Tokenizer<'a> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let set = RegexSet::new(&[
-            r"\w+",
-            r"\d+",
-            r"\pL+",
-            r"foo",
-            r"bar",
-            r"barfoo",
-            r"foobar",
-        ]).unwrap();
-
-        todo!()
+        while let Some(v) = self.chars.next() {
+            return Some(Token::Operator(v));
+        }
+        None
     }
 }

@@ -3,7 +3,7 @@ use crate::lexer::Tokenizer;
 mod lexer;
 
 fn main() {
-    let t = Tokenizer::new("\
+    let t = Tokenizer::from("\
 # Compute the x'th fibonacci number.
 def fib(x)
   if x < 3 then
